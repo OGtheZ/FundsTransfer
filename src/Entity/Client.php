@@ -6,18 +6,22 @@ use App\Repository\ClientRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: ClientRepository::class)]
 class Client
 {
+    #[Groups('account')]
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private int $id;
 
+    #[Groups('account')]
     #[ORM\Column(length: 255)]
     private string $name;
 
+    #[Groups('account')]
     #[ORM\Column(length: 255)]
     private string $lastName;
 

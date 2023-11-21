@@ -13,13 +13,13 @@ class Client
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    private ?int $id = null;
+    private int $id;
 
     #[ORM\Column(length: 255)]
-    private ?string $name = null;
+    private string $name;
 
     #[ORM\Column(length: 255)]
-    private ?string $lastName = null;
+    private string $lastName;
 
     #[ORM\OneToMany(mappedBy: 'client', targetEntity: Account::class)]
     private Collection $accounts;
@@ -29,7 +29,7 @@ class Client
         $this->accounts = new ArrayCollection();
     }
 
-    public function getId(): ?int
+    public function getId(): int
     {
         return $this->id;
     }
@@ -46,7 +46,7 @@ class Client
         return $this;
     }
 
-    public function getLastName(): ?string
+    public function getLastName(): string
     {
         return $this->lastName;
     }
@@ -78,12 +78,7 @@ class Client
 
     public function removeAccount(Account $account): static
     {
-        if ($this->accounts->removeElement($account)) {
-            // set the owning side to null (unless already changed)
-            if ($account->getClient() === $this) {
-                $account->setClient(null);
-            }
-        }
+        $this->accounts->removeElement($account);
 
         return $this;
     }

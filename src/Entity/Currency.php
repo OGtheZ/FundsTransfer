@@ -13,13 +13,13 @@ class Currency
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    private ?int $id = null;
+    private int $id;
 
     #[ORM\Column(length: 255)]
-    private ?string $name = null;
+    private string $name;
 
     #[ORM\Column(length: 255)]
-    private ?string $code = null;
+    private string $code;
 
     #[ORM\OneToMany(mappedBy: 'currency', targetEntity: Account::class)]
     private Collection $accounts;
@@ -29,12 +29,12 @@ class Currency
         $this->accounts = new ArrayCollection();
     }
 
-    public function getId(): ?int
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function getName(): ?string
+    public function getName(): string
     {
         return $this->name;
     }
@@ -46,7 +46,7 @@ class Currency
         return $this;
     }
 
-    public function getCode(): ?string
+    public function getCode(): string
     {
         return $this->code;
     }
@@ -78,12 +78,7 @@ class Currency
 
     public function removeAccount(Account $account): static
     {
-        if ($this->accounts->removeElement($account)) {
-            // set the owning side to null (unless already changed)
-            if ($account->getCurrency() === $this) {
-                $account->setCurrency(null);
-            }
-        }
+        $this->accounts->removeElement($account);
 
         return $this;
     }

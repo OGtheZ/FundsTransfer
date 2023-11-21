@@ -11,9 +11,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class ApiLayerCurrencyExchangeRateManager implements CurrencyExchangeRateManagerInterface
 {
-    public function __construct(private string $apiKey, private HttpClientInterface $httpClient){
-        $this->apiKey = $_ENV['EXCHANGE_RATE_API_KEY'];
-    }
+    public function __construct(private HttpClientInterface $httpClient){}
 
     /**
      * @throws TransportExceptionInterface
@@ -27,11 +25,31 @@ class ApiLayerCurrencyExchangeRateManager implements CurrencyExchangeRateManager
         $url = "https://api.apilayer.com/currency_data/convert?to=".$currencyTo."&from=".$currencyFrom."&amount=".$amount;
         $headers = [
             'Content-Type' => 'text/plain',
-            'apikey' => $this->apiKey
+            'apikey' => $_ENV['EXCHANGE_RATE_API_KEY']
         ];
 
         $response = $this->httpClient->withOptions(['headers' => $headers])->request('GET', $url);
 
         return $response->toArray();
+    }
+
+    /**
+     * @throws TransportExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws DecodingExceptionInterface
+     * @throws ClientExceptionInterface
+     */
+    public function loadCurrencies(): array
+    {
+        $url = "https://api.apilayer.com/currency_data/list";
+        $headers = [
+            'Content-Type' => 'text/plain',
+            'apikey' => $_ENV['EXCHANGE_RATE_API_KEY']
+        ];
+
+        $response = $this->httpClient->withOptions(['headers' => $headers])->request('GET', $url);
+        $responseArray = $response->toArray();
+        return $responseArray['currencies'];
     }
 }

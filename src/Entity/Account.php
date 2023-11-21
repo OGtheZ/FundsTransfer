@@ -3,7 +3,10 @@
 namespace App\Entity;
 
 use App\Repository\AccountRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: AccountRepository::class)]
 class Account
@@ -11,25 +14,38 @@ class Account
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    private ?int $id = null;
+    private int $id;
 
     #[ORM\Column]
-    private ?int $balance = null;
+    #[Assert\PositiveOrZero]
+    private int $balance;
 
     #[ORM\ManyToOne(inversedBy: 'accounts')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Currency $currency = null;
+    private Currency $currency;
 
     #[ORM\ManyToOne(inversedBy: 'accounts')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Client $client = null;
+    private Client $client;
+
+    #[ORM\OneToMany(mappedBy: 'accountFrom', targetEntity: Transaction::class)]
+    private Collection $outgoingTransactions;
+
+    #[ORM\OneToMany(mappedBy: 'accountTo', targetEntity: Transaction::class)]
+    private Collection $incomingTransactions;
+
+    public function __construct()
+    {
+        $this->outgoingTransactions = new ArrayCollection();
+        $this->incomingTransactions = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getBalance(): ?int
+    public function getBalance(): int
     {
         return $this->balance;
     }
@@ -41,26 +57,76 @@ class Account
         return $this;
     }
 
-    public function getCurrency(): ?Currency
+    public function getCurrency(): Currency
     {
         return $this->currency;
     }
 
-    public function setCurrency(?Currency $currency): static
+    public function setCurrency(Currency $currency): static
     {
         $this->currency = $currency;
 
         return $this;
     }
 
-    public function getClient(): ?Client
+    public function getClient(): Client
     {
         return $this->client;
     }
 
-    public function setClient(?Client $client): static
+    public function setClient(Client $client): static
     {
         $this->client = $client;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Transaction>
+     */
+    public function getOutgoingTransactions(): Collection
+    {
+        return $this->outgoingTransactions;
+    }
+
+    public function addOutgoingTransaction(Transaction $outgoingTransaction): static
+    {
+        if (!$this->outgoingTransactions->contains($outgoingTransaction)) {
+            $this->outgoingTransactions->add($outgoingTransaction);
+            $outgoingTransaction->setAccountFrom($this);
+        }
+
+        return $this;
+    }
+
+    public function removeOutgoingTransaction(Transaction $outgoingTransaction): static
+    {
+        $this->outgoingTransactions->removeElement($outgoingTransaction);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Transaction>
+     */
+    public function getIncomingTransactions(): Collection
+    {
+        return $this->incomingTransactions;
+    }
+
+    public function addIncomingTransaction(Transaction $incomingTransaction): static
+    {
+        if (!$this->incomingTransactions->contains($incomingTransaction)) {
+            $this->incomingTransactions->add($incomingTransaction);
+            $incomingTransaction->setAccountTo($this);
+        }
+
+        return $this;
+    }
+
+    public function removeIncomingTransaction(Transaction $incomingTransaction): static
+    {
+        $this->incomingTransactions->removeElement($incomingTransaction);
 
         return $this;
     }

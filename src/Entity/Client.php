@@ -11,17 +11,17 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[ORM\Entity(repositoryClass: ClientRepository::class)]
 class Client
 {
-    #[Groups('account')]
+    #[Groups(['account', 'transaction'])]
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private int $id;
 
-    #[Groups('account')]
+    #[Groups(['account', 'transaction'])]
     #[ORM\Column(length: 255)]
     private string $name;
 
-    #[Groups('account')]
+    #[Groups(['account', 'transaction'])]
     #[ORM\Column(length: 255)]
     private string $lastName;
 

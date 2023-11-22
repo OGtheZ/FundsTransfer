@@ -38,9 +38,8 @@ class FundsTransferController extends AbstractController
             // convert currency if needed
             if($accountFrom->getCurrency() !== $currency)
             {
-                // amount of transaction and balance stored in account should always be in cents as nominal value, *100 since apilayer accepts floats of whole units of currency
-                $exchange = $this->rateManager->convert($currency->getCode(), $accountFrom->getCurrency()->getCode(), $amount/100);
-                $deductibleAmount = (int)ceil($exchange*100);
+                // amount of transaction and balance stored in account should always be in cents as nominal value, e.g. 1 USD = 100
+                $deductibleAmount = $this->rateManager->convert($currency->getCode(), $accountFrom->getCurrency()->getCode(), $amount);
             }
             // check if enough funds are available
             if($accountFrom->getBalance() < $deductibleAmount)
@@ -48,9 +47,11 @@ class FundsTransferController extends AbstractController
                 return new JsonResponse(['error' => 'Insufficient funds.'], 400);
             }
 
+            // add balance and add incoming transaction for receiving account
             $accountTo->setBalance($accountTo->getBalance() + $amount);
             $accountTo->addIncomingTransaction($transaction);
 
+            // reduce balance and add outgoing transaction for sender account
             $accountFrom->setBalance($accountFrom->getBalance() - $deductibleAmount);
             $accountFrom->addOutgoingTransaction($transaction);
 
@@ -59,7 +60,7 @@ class FundsTransferController extends AbstractController
             $this->entityManager->persist($accountTo);
             $this->entityManager->flush();
 
-            return new JsonResponse(['success' => 'You have successfully transferred '. $amount/100 . ' ' . $currency->getName()]);
+            return new JsonResponse(['success' => 'You have successfully transferred '. $amount/100 . ' ' . $currency->getCode()], 200);
         } else{
             $errors = [];
             foreach ($transactionForm->getErrors(true) as $error)

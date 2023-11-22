@@ -11,7 +11,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: AccountRepository::class)]
 class Account
-{#[Groups('account')]
+{#[Groups(['account', 'transaction'])]
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -27,7 +27,7 @@ class Account
     #[ORM\JoinColumn(nullable: false)]
     private Currency $currency;
 
-    #[Groups('account')]
+    #[Groups(['account', 'transaction'])]
     #[ORM\ManyToOne(inversedBy: 'accounts')]
     #[ORM\JoinColumn(nullable: false)]
     private Client $client;

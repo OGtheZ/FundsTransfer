@@ -9,17 +9,17 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[ORM\Entity(repositoryClass: CurrencyRepository::class)]
 class Currency
 {
-    #[Groups('account')]
+    #[Groups(['account', 'transaction'])]
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private int $id;
 
-    #[Groups('account')]
+    #[Groups(['account', 'transaction'])]
     #[ORM\Column(length: 255)]
     private string $name;
 
-    #[Groups('account')]
+    #[Groups(['account', 'transaction'])]
     #[ORM\Column(length: 255)]
     private string $code;
 

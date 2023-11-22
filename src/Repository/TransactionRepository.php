@@ -2,8 +2,10 @@
 
 namespace App\Repository;
 
+use App\Entity\Account;
 use App\Entity\Transaction;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -21,28 +23,20 @@ class TransactionRepository extends ServiceEntityRepository
         parent::__construct($registry, Transaction::class);
     }
 
-//    /**
-//     * @return Transaction[] Returns an array of Transaction objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('t')
-//            ->andWhere('t.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('t.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+    public function findAllForAccount(Account $account, int $page, int $limit)
+    {
+        $firstResult = $page === 1 ? 0 : ($page-1)*$limit;
 
-//    public function findOneBySomeField($value): ?Transaction
-//    {
-//        return $this->createQueryBuilder('t')
-//            ->andWhere('t.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+        $qb = $this->createQueryBuilder('t');
+        $result = $qb->where('t.accountFrom = :id')
+            ->setParameter('id', $account->getId())
+            ->orWhere('t.accountTo = :id')
+            ->setParameter('id', $account->getId())
+            ->setFirstResult($firstResult)
+            ->setMaxResults($limit)
+            ->orderBy('t.id', 'DESC')
+            ->getQuery()
+            ->getResult();
+        return $result;
+    }
 }

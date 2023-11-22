@@ -20,9 +20,9 @@ class ApiLayerCurrencyExchangeRateManager implements CurrencyExchangeRateManager
      * @throws DecodingExceptionInterface
      * @throws ClientExceptionInterface
      */
-    public function convert(string $currencyFrom, string $currencyTo, float|int $amount): float
+    public function convert(string $currencyFrom, string $currencyTo, int $amount): float
     {
-        $url = "https://api.apilayer.com/currency_data/convert?to=".$currencyTo."&from=".$currencyFrom."&amount=".$amount;
+        $url = "https://api.apilayer.com/currency_data/convert?to=".$currencyTo."&from=".$currencyFrom."&amount=".$amount/100;
         $headers = [
             'Content-Type' => 'text/plain',
             'apikey' => $_ENV['EXCHANGE_RATE_API_KEY']
@@ -30,7 +30,7 @@ class ApiLayerCurrencyExchangeRateManager implements CurrencyExchangeRateManager
 
         $response = $this->httpClient->withOptions(['headers' => $headers])->request('GET', $url);
 
-        return $response->toArray()['result'];
+        return (int)ceil($response->toArray()['result']*100);
     }
 
     /**

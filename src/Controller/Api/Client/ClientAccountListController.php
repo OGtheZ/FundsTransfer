@@ -14,8 +14,8 @@ class ClientAccountListController extends AbstractController
     {
     }
 
-    #[Route('/api/client/{client}/account/list', name: 'api_client_account_list')]
-    public function accountList(Client $client, ): JsonResponse
+    #[Route('/api/client/{client}/accounts/list', name: 'api_client_account_list')]
+    public function __invoke(Client $client): JsonResponse
     {
         $accounts = $client->getAccounts()->getValues();
 

@@ -15,11 +15,7 @@ class Transaction
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
-    private Currency $currencyFrom;
-
-    #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false)]
-    private Currency $currencyTo;
+    private Currency $currency;
 
     #[ORM\ManyToOne(inversedBy: 'outgoingTransactions')]
     #[ORM\JoinColumn(nullable: false)]
@@ -37,26 +33,14 @@ class Transaction
         return $this->id;
     }
 
-    public function getCurrencyFrom(): Currency
+    public function getCurrency(): Currency
     {
-        return $this->currencyFrom;
+        return $this->currency;
     }
 
-    public function setCurrencyFrom(Currency $currencyFrom): static
+    public function setCurrency(Currency $currency): static
     {
-        $this->currencyFrom = $currencyFrom;
-
-        return $this;
-    }
-
-    public function getCurrencyTo(): Currency
-    {
-        return $this->currencyTo;
-    }
-
-    public function setCurrencyTo(Currency $currencyTo): static
-    {
-        $this->currencyTo = $currencyTo;
+        $this->currency = $currency;
 
         return $this;
     }

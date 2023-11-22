@@ -20,7 +20,7 @@ class ApiLayerCurrencyExchangeRateManager implements CurrencyExchangeRateManager
      * @throws DecodingExceptionInterface
      * @throws ClientExceptionInterface
      */
-    public function convert(string $currencyFrom, string $currencyTo, int $amount): float
+    public function convert(string $currencyFrom, string $currencyTo, int $amount): int
     {
         $url = "https://api.apilayer.com/currency_data/convert?to=".$currencyTo."&from=".$currencyFrom."&amount=".$amount/100;
         $headers = [

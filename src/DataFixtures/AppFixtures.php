@@ -25,8 +25,10 @@ class AppFixtures extends Fixture
      */
     public function load(ObjectManager $manager): void
     {
+        // load currencies from api
         $response = $this->rateManager->loadCurrencies();
 
+        // create currencies
         foreach ($response as $key => $currency)
         {
             $newCurrency = new Currency();
@@ -35,17 +37,20 @@ class AppFixtures extends Fixture
             $manager->persist($newCurrency);
         }
         $manager->flush();
+        // get some currencies by code to use for clients accounts
         $usd = $this->currencyRepository->findOneBy(['code' => 'USD']);
         $euro = $this->currencyRepository->findOneBy(['code' => 'EUR']);
         $frank = $this->currencyRepository->findOneBy(['code' => 'CHF']);
         $currencies = [$usd, $euro, $frank];
 
+        // crate clients
         for($i = 0; $i <= 2; $i++)
         {
             $client = new Client();
             $client->setName('John'.$i);
             $client->setLastName('Doe'.$i);
             for($y = 0; $y <= 2; $y++){
+                // create accounts for clients with previously selected currencies
                 $account = new Account();
                 $account->setBalance(1000);
                 $account->setClient($client);
